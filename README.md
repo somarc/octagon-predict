@@ -1,82 +1,95 @@
-# VeChain UFC Market
+# Octagon Predict - Development Workflow
 
-[![VeChainThor](https://img.shields.io/badge/Blockchain-VeChainThor-blue)](https://vechain.org) [![UFC Prediction Markets](https://img.shields.io/badge/Focus-UFC%20Fights-red)](https://www.ufc.com) [![VTHO Token](https://img.shields.io/badge/Token-VTHO-green)](https://vechain.org)
+This repository contains the Octagon Predict (VeChain UFC Market) project with automated workflows for syncing code from Replit to Git.
 
-VeChain UFC Market is a decentralized prediction market platform built on the **VeChainThor blockchain**, specifically designed for betting on **UFC fight outcomes**. Inspired by Polymarket, this app lets fans put their VTHO where their predictions are — all powered by the energy-efficient VTHO gas token.
+## Repository Structure
 
-Place bets on who wins, how they win, or round-specific outcomes using real VeChainThor transactions. The platform combines fast blockchain interactions with a sleek, dark sports-themed UI perfect for fight night.
+- **octagon-predict/** - Main git-controlled project directory
+- **merge-replit-code.sh** - Automated merge script for Replit exports
 
-## 🚀 Features
+## Workflow: Merging Replit Code to Git
 
-- Predict UFC fight results (winner, method of victory, rounds, etc.)
-- Fully integrated with **VeChainThor Testnet**
-- Use **VTHO** tokens for all bets and gas fees
-- Wallet connection via **VeWorld** and **Sync2**
-- Real-time odds visualization with Recharts
-- Mobile-first responsive design with dark, high-energy aesthetic
-- Live market pools and betting tracking
+### Quick Start
 
-## 🛠 Tech Stack
+When you download a new ZIP export from Replit:
 
-### Frontend
-- **React 18 + TypeScript**
-- **Vite** (fast builds & Replit-friendly)
-- **Wouter** (lightweight routing)
-- **TanStack React Query** (server state)
-- **Tailwind CSS v4** + **shadcn/ui** (New York style components)
-- **Framer Motion** (smooth animations)
-- **Recharts** (odds & pool charts)
+1. **Unzip** the file in `/Users/mhess/octagon-predict/`
+   ```bash
+   cd /Users/mhess/octagon-predict
+   unzip Fight-Predictor-X.zip
+   ```
 
-### Backend
-- **Express.js + TypeScript**
-- **Drizzle ORM** + **PostgreSQL** (fighters, markets, bets)
-- RESTful API (`/api/*`)
+2. **Run the merge script**
+   ```bash
+   ./merge-replit-code.sh Fight-Predictor-X "Optional custom commit message"
+   ```
 
-### VeChain Integration
-- **@vechain/dapp-kit-react** (wallet connect)
-- **Connex** (direct blockchain interaction)
-- **VTHO Token**: `0x0000000000000000000000000000456E65726779` (energy/gas)
-- Network: VeChain Testnet (`https://testnet.vechain.org/`)
+That's it! The script will:
+- ✓ Sync all files (excluding .git, .local, node_modules, dist)
+- ✓ Stage changes
+- ✓ Create a commit
+- ✓ Push to GitHub
 
-## 📊 Data Model
+### Manual Usage
 
-- **Fighters**: Profile, record, weight class, nationality
-- **Markets**: Event, fight, odds (decimal format), liquidity pools, status
-- **Bets**: Wallet address, selected outcome, VTHO amount, potential payout
+If you prefer to do it manually:
 
-## 🔑 Key Design Decisions
+```bash
+# 1. Sync files
+rsync -av --exclude='.git' --exclude='.local' --exclude='node_modules' --exclude='dist' \
+  Fight-Predictor-X/ octagon-predict/
 
-- **Identity = Wallet**: No traditional login — your VeChain wallet is your account
-- **Mock to Real Transition**: Currently uses mock data; ready for smart contract replacement
-- **Decimal Odds**: Simple math for calculations and payouts
-- **Session-less API**: Fast and stateless
-- **Mobile-First**: Built for checking odds on fight night from your phone
+# 2. Commit and push
+cd octagon-predict
+git add -A
+git commit -m "Update: Your commit message"
+git push
+```
 
-## 🗄 External Dependencies
+## Script Options
 
-- **VeChain Testnet Node**: `https://testnet.vechain.org/`
-- **VTHO Token Contract**: `0x0000000000000000000000000000456E65726779`
-- **PostgreSQL** (via `DATABASE_URL`)
-- **Drizzle Kit** (migrations in `/migrations`)
+```bash
+./merge-replit-code.sh <source-folder> [commit-message]
+```
 
-## 🔮 Future Roadmap
+**Parameters:**
+- `source-folder` (required) - Name of the unzipped Replit folder
+- `commit-message` (optional) - Custom commit message (default: "Update: Sync latest code from Replit")
 
-- Full smart contract deployment for on-chain betting logic
-- Integration with **Chainlink MMA Data Feeds** for trusted outcome resolution
-- Mainnet launch on VeChainThor
-- Advanced market types (prop bets, parlays)
-- Leaderboards and betting history
+**Examples:**
+```bash
+# Basic usage with default commit message
+./merge-replit-code.sh Fight-Predictor-2
 
-## 🚧 Current Status
+# With custom commit message
+./merge-replit-code.sh Fight-Predictor-3 "Add VeChain wallet integration"
+```
 
-- Betting logic simulated off-chain
-- Smart contracts in development
-- Running on VeChain Testnet
+## Project Details
 
-Get ready to bet with VTHO on the biggest fights in the octagon — built for UFC fans, powered by VeChainThor.
+**GitHub Repository:** https://github.com/somarc/octagon-predict
 
-> **Fight. Predict. Win.** 🥊
+**SSH Configuration:** Uses `github.com-somarc` host alias with `id_ed25519_somarc` key
 
----
+## Troubleshooting
 
-*This project is a Polymarket-inspired prediction market focused exclusively on UFC partnerships and events, deployed on VeChainThor blockchain with extensive use of the VTHO gas token.*
+### "Permission denied" errors
+Make sure the script is executable:
+```bash
+chmod +x merge-replit-code.sh
+```
+
+### "Source folder does not exist"
+Check that you've unzipped the Replit export in the correct directory:
+```bash
+ls -la /Users/mhess/octagon-predict/
+```
+
+### Git authentication issues
+Verify your SSH key configuration:
+```bash
+ssh -T git@github.com-somarc
+```
+
+Should respond with: "Hi somarc! You've successfully authenticated..."
+
