@@ -1,12 +1,19 @@
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
 import { MarketCard } from "@/components/MarketCard";
-import { mockMarkets } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, Trophy, Flame } from "lucide-react";
 import heroBg from "@assets/generated_images/cinematic_mma_octagon_with_neon_lights.png";
+import { useQuery } from "@tanstack/react-query";
+import { fetchMarkets } from "@/lib/api";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Home() {
+  const { data: markets, isLoading, error } = useQuery({
+    queryKey: ["markets"],
+    queryFn: fetchMarkets,
+  });
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <Navbar />
@@ -91,11 +98,21 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockMarkets.map((market) => (
-            <MarketCard key={market.id} market={market} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <Spinner className="w-8 h-8" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-20 text-red-400">
+            Failed to load markets. Please try again later.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {markets?.map((market) => (
+              <MarketCard key={market.id} market={market} />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

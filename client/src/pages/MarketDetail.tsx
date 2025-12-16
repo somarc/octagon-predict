@@ -1,6 +1,6 @@
 import { useParams } from "wouter";
 import { Navbar } from "@/components/Navbar";
-import { mockMarkets, userBalance } from "@/lib/mockData";
+import { userBalance } from "@/lib/mockData";
 import { PriceChart } from "@/components/PriceChart";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,13 +10,28 @@ import { TrendingUp, Clock, Users, Zap, Shield, ChevronLeft } from "lucide-react
 import { Link } from "wouter";
 import { useState } from "react";
 import { BettingModal } from "@/components/BettingModal";
+import { useQuery } from "@tanstack/react-query";
+import { fetchMarket } from "@/lib/api";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function MarketDetail() {
   const params = useParams();
-  const market = mockMarkets.find(m => m.id === params.id);
+  const { data: market, isLoading, error } = useQuery({
+    queryKey: ["market", params.id],
+    queryFn: () => fetchMarket(params.id!),
+    enabled: !!params.id,
+  });
   const [bettingSide, setBettingSide] = useState<'A' | 'B' | null>(null);
 
-  if (!market) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background text-white flex items-center justify-center">
+        <Spinner className="w-8 h-8" />
+      </div>
+    );
+  }
+
+  if (error || !market) {
     return (
       <div className="min-h-screen bg-background text-white flex items-center justify-center">
         Market not found

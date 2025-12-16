@@ -5,6 +5,9 @@ import { Slider } from "@/components/ui/slider";
 import { Market, userBalance } from "@/lib/mockData";
 import { useState, useEffect } from "react";
 import { Zap, AlertCircle } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { placeBet } from "@/lib/api";
+import { toast } from "sonner";
 
 interface BettingModalProps {
   isOpen: boolean;
@@ -16,11 +19,29 @@ interface BettingModalProps {
 export function BettingModal({ isOpen, onClose, market, side }: BettingModalProps) {
   const [amount, setAmount] = useState<number>(0);
   const [sliderValue, setSliderValue] = useState([0]);
+  const queryClient = useQueryClient();
 
   const fighter = side === 'A' ? market.fighterA : market.fighterB;
   const odds = side === 'A' ? market.oddsA : market.oddsB;
   const potentialReturn = amount * odds;
   const maxBet = userBalance.vtho;
+
+  const betMutation = useMutation({
+    mutationFn: placeBet,
+    onSuccess: () => {
+      toast.success("Bet placed successfully!", {
+        description: `${amount} VTHO on ${fighter?.name}`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["markets"] });
+      queryClient.invalidateQueries({ queryKey: ["market", market.id] });
+      onClose();
+    },
+    onError: (error: Error) => {
+      toast.error("Failed to place bet", {
+        description: error.message,
+      });
+    },
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -48,6 +69,22 @@ export function BettingModal({ isOpen, onClose, market, side }: BettingModalProp
     const val = (percent / 100) * maxBet;
     setAmount(Math.floor(val));
     setSliderValue([percent]);
+  };
+
+  const handlePlaceBet = () => {
+    if (amount <= 0 || !side) {
+      toast.error("Invalid bet amount");
+      return;
+    }
+
+    betMutation.mutate({
+      walletAddress: "0x1234567890abcdef", // Mock wallet address - in production, this would come from VeChain wallet
+      marketId: market.id,
+      side,
+      amount: amount.toString(),
+      odds: odds.toString(),
+      potentialReturn: potentialReturn.toString(),
+    });
   };
 
   return (
@@ -122,8 +159,12 @@ export function BettingModal({ isOpen, onClose, market, side }: BettingModalProp
         </div>
 
         <DialogFooter>
-          <Button className="w-full bg-primary text-black hover:bg-primary/90 font-display font-bold tracking-wider text-lg h-12">
-            PLACE BET
+          <Button 
+            onClick={handlePlaceBet}
+            disabled={betMutation.isPending || amount <= 0}
+            className="w-full bg-primary text-black hover:bg-primary/90 font-display font-bold tracking-wider text-lg h-12 disabled:opacity-50"
+          >
+            {betMutation.isPending ? "PLACING BET..." : "PLACE BET"}
           </Button>
         </DialogFooter>
       </DialogContent>
