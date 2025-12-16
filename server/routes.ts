@@ -3,11 +3,15 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertBetSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
+import { orderBookRouter } from "./orderbook/api";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Order book API routes
+  app.use("/api/orderbook", orderBookRouter);
+
   // Get all markets with fighter details
   app.get("/api/markets", async (req, res) => {
     try {

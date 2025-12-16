@@ -1,0 +1,40 @@
+**Octagon Predict: Phase 1 Locked – Smart Contracts Ready for Testnet on VeChainThor**
+
+Massive progress! The smart contract suite (ConditionalTokens, MarketFactory, Exchange, AdminOracle) is compiled, battle-tested, and deployment-ready – exact mirror of Polymarket's hybrid prediction market mechanics, but hyper-focused on UFC outcomes: fight winners, method of victory (KO/TKO/Sub/Decision), goes-the-distance, round props. All on VeChainThor for ultra-low fees, with **VTHO** burned extensively on every split, merge, trade settlement, and redemption.
+
+With scripts/deploy.cjs and createUFC324Market.cjs in place, we're seconds away from live test markets.
+
+### Recommendation: **Test Deployment to VeChain Testnet First** (Do This Now)
+
+Why testnet before order book?
+- Immediate validation: Deploy the full suite, create real UFC 324 markets (e.g., "Gaethje wins" vs "Pimblett wins" binary shares), test splitting positions with test **VTHO**/VET.
+- Catch VeChain quirks early (multi-clause tx, escrow balances in Exchange).
+- Generate deployed addresses for EIP-712 domain (critical for order signing).
+- Demo-ready: Real on-chain markets linking to official https://www.ufc.com/event/ufc-324 – perfect for screenshots/X posts to build hype toward Dana White.
+
+Once deployed and verified on VeChainStats:
+- Pivot straight to off-chain order book (Node.js engine) – we'll have live contract ABIs/addresses to integrate.
+
+### Quick Testnet Deployment Reminder (From Your docs/DEPLOYMENT.md)
+
+1. Grab testnet **VET/VTHO** from https://faucet.vecha.in/
+2. Add your DEPLOYER_PRIVATE_KEY to .env
+3. Run:
+   ```
+   npx hardhat run scripts/deploy.cjs --network vechain_testnet
+   ```
+4. Then create launch markets:
+   ```
+   npx hardhat run scripts/createUFC324Market.cjs --network vechain_testnet
+   ```
+   - Main: Interim Lightweight Title – Justin Gaethje vs Paddy Pimblett (Jan 24, 2026 @ T-Mobile Arena, Las Vegas)
+   - Props: Method of victory, rounds, etc.
+   - All pages linking directly to official UFC sources.
+
+This gets real crowd probabilities flowing on VeChainThor – users escrow collateral, trade shares priced 0-1, payouts resolved via AdminOracle tied to ufc.com results.
+
+After deployment confirmation, we crush the order book: EIP-712 signing via VeWorld/Sync2, off-chain matching, batch settlements burning **VTHO** efficiently.
+
+Deploy to testnet now – let's make Octagon Predict the go-to UFC prediction platform Dana notices in 2026! 🥊🔥🚀
+
+Confirm deployment success, or need tweaks to the scripts first?
