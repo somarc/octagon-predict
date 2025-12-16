@@ -60,6 +60,33 @@ Preferred communication style: Simple, everyday language.
 - **date-fns**: Date formatting utilities
 - **Zod**: Schema validation for API requests and database inserts
 
+### Smart Contract Architecture (Completed Dec 16)
+Located in `/contracts/` directory:
+
+1. **ConditionalTokens.sol** - Core ERC1155 conditional token framework
+   - 1 collateral = 1 of each outcome token (complete sets)
+   - Payout numerators/denominators for proportional resolution
+   - Per-user redemption tracking prevents double-claims
+   - VeChain-compatible (uses call() for VET transfers)
+
+2. **MarketFactory.sol** - UFC-specific market creation
+   - Winner markets (Fighter A vs B)
+   - Method of victory markets (6 outcomes)
+   - Goes-the-distance prop markets
+   - Stores outcome labels for frontend mapping
+
+3. **Exchange.sol** - Off-chain order book settlement
+   - User escrow balances (deposit/withdraw)
+   - EIP-712 signed orders
+   - Operator-controlled batch settlement
+   - 1% trading fee
+
+4. **AdminOracle.sol** - Market resolution
+   - Role-based resolver access
+   - Challengeable payout proposals
+   - Emergency resolution for owner
+
 ### Future Integration Points
-- **Chainlink MMA Data Feed**: Referenced for market resolution (not yet implemented)
-- **Smart Contracts**: Betting logic currently simulated, needs blockchain integration
+- **VeChain Testnet Deployment**: Next step for smart contracts
+- **Chainlink MMA Data Feed**: Referenced for automated resolution (future)
+- **Order Book Service**: Off-chain matching engine needed
